@@ -14,10 +14,17 @@ bool Game::initialize() {
 		return false;
 	}
 
-	this->window = SDL_CreateWindow(TITLE, START_X, START_Y, WIDTH, HEIGHT, FLAGS);
+	this->window = SDL_CreateWindow(TITLE, START_X, START_Y, WIDTH, HEIGHT, W_FLAGS);
 	if (!this->window)
 	{
 		SDL_Log("Failed to create window: %s", SDL_GetError());
+		return false;
+	}
+
+	this->renderer = SDL_CreateRenderer(this->window, R_DRIVER, R_FLAGS);
+	if (!this->renderer)
+	{
+		SDL_Log("Failed to create renderer: %s", SDL_GetError());
 		return false;
 	}
 

@@ -28,7 +28,7 @@ $(OBJ_DIR)/%.o: %.cpp Makefile | $(OBJ_DIR)
 		$(CC) $(FLAGS) -c $< -o $@ $(SDL_FLAGS)
 
 $(OBJ_DIR):
-			mkdir -p $@
+		mkdir -p $@
 
 clean:
 		rm -rf $(OBJ)
