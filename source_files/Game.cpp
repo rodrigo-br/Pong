@@ -6,9 +6,7 @@ Game::Game() {
 };
 
 bool Game::initialize() {
-	int sdlResult = SDL_Init(SDL_INIT_VIDEO);
-
-	if (sdlResult != 0)
+	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
 		return false;
@@ -33,6 +31,7 @@ bool Game::initialize() {
 
 void Game::shutdown() {
 	SDL_DestroyWindow(this->window);
+	SDL_DestroyRenderer(this->renderer);
 	SDL_Quit();
 };
 
@@ -70,4 +69,15 @@ void Game::updateGame() {
 
 void Game::generateOutput() {
 	
+	if (SDL_SetRenderDrawColor(this->renderer, 0, 0, 255, 255) != 0)
+	{
+		SDL_Log("Failed to set renderer color: %s", SDL_GetError());
+	}
+	if (SDL_RenderClear(this->renderer) != 0)
+	{
+		SDL_Log("Failed to clear renderer: %s", SDL_GetError());
+	}
+	// draw game scene
+	// ...
+	SDL_RenderPresent(this->renderer);
 };
