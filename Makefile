@@ -12,18 +12,20 @@ CC		= c++
 
 FLAGS	= -g3 -Wall -Wextra -Werror
 
+SDL_FLAGS = -lSDL2main -lSDL2
+
 VPATH	= $(DIRS)
 
 all: $(NAME)
 
 %.o:%.cpp
-	$(CC) $(FLAGS) -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@ $(SDL_FLAGS)
 
 $(NAME): $(OBJ_DIR) $(OBJ)
-		$(CC) $(FLAGS) -o $@ $(OBJ)
+		$(CC) $(FLAGS) -o $@ $(OBJ) $(SDL_FLAGS)
 
 $(OBJ_DIR)/%.o: %.cpp Makefile | $(OBJ_DIR)
-		$(CC) $(FLAGS) -c $< -o $@
+		$(CC) $(FLAGS) -c $< -o $@ $(SDL_FLAGS)
 
 $(OBJ_DIR):
 			mkdir -p $@
