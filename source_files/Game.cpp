@@ -39,7 +39,17 @@ void Game::runLoop() {
 };
 
 void Game::processInput() {
-	
+	SDL_Event event;
+
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type)
+		{
+			case SDL_QUIT:
+				this->running = false;
+				break;
+		}
+	}
 };
 
 void Game::updateGame() {
