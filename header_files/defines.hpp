@@ -49,5 +49,15 @@
  */
 # define R_FLAGS (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
 
+/**
+ * @brief The thickness of the walls
+ */
+# define THICKNESS 15
+
+struct Vector2 {
+	float x;
+	float y;
+};
+
 
 #endif

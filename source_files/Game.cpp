@@ -3,6 +3,8 @@
 Game::Game() {
 	this->window = nullptr;
 	this->running = true;
+	this->ballPos = { WIDTH / 2, HEIGHT / 2 };
+	this->paddlePos = { THICKNESS, HEIGHT / 2 - THICKNESS * 5 };
 };
 
 bool Game::initialize() {
@@ -79,5 +81,18 @@ void Game::generateOutput() {
 	}
 	// draw game scene
 	// ...
+	SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
+	SDL_Rect left_paddle {static_cast<int>(this->paddlePos.x),
+							static_cast<int>(this->paddlePos.y - THICKNESS / 2),
+							THICKNESS, THICKNESS * 10
+						};
+	SDL_RenderFillRect(this->renderer, &left_paddle);
+	SDL_Rect ball {static_cast<int>(this->ballPos.x - THICKNESS / 2),
+					static_cast<int>(this->ballPos.y - THICKNESS / 2),
+					THICKNESS, THICKNESS
+				};
+	SDL_RenderFillRect(this->renderer, &ball);
+
+	// end drawing
 	SDL_RenderPresent(this->renderer);
 };

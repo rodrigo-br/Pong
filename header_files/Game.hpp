@@ -15,6 +15,8 @@ class Game
 		SDL_Window		*window;
 		SDL_Renderer	*renderer;
 		bool			running;
+		struct Vector2	paddlePos;
+		struct Vector2	ballPos;
 
 	public:
 		/**
