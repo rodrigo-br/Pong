@@ -10,22 +10,22 @@
 /**
  * @brief Top left x-coordinate of window
  */
-# define START_X 100
+# define START_X 100.0f
 
 /**
  * @brief Top left y-coordinate of window
  */
-# define START_Y 100
+# define START_Y 100.0f
 
 /**
  * @brief Width of window
  */
-# define WIDTH 1024
+# define WIDTH 1024.0f
 
 /**
  * @brief Height of window
  */
-# define HEIGHT 768
+# define HEIGHT 768.0f
 
 /**
  * @brief Window flags - 0 for no flags
@@ -59,12 +59,12 @@
 /**
  * @brief Initial X position of the ball. Set to the center of the screen
  */
-# define BALL_X (WIDTH / 2)
+# define BALL_X (WIDTH / 2.0f)
 
 /**
  * @brief Initial Y position of the ball. Set to the center of the screen
  */
-# define BALL_Y (HEIGHT / 2)
+# define BALL_Y (HEIGHT / 2.0f)
 
 /**
  * @brief Initial X position of the paddle. Set to the left side of the screen
@@ -75,7 +75,7 @@
  * @brief Initial Y position of the paddle. Set to the center of the left 
  * side of the screen
  */
-# define PADDLE_Y (HEIGHT / 2)
+# define PADDLE_Y (HEIGHT / 2.0f)
 
 /**
  * @brief When paddleDirection is set to 0, the paddle is not moving

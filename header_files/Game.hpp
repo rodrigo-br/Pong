@@ -57,6 +57,9 @@ class Game
 		void moveBall(float deltaTime);
 		bool collisionWalls();
 		bool collisionPaddle();
+		void drawPaddle();
+		void drawBall();
+		void drawWalls();
 };
 
 

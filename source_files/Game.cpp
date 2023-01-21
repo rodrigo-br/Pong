@@ -2,6 +2,7 @@
 
 Game::Game() {
 	this->window = nullptr;
+	this->renderer = nullptr;
 	this->running = true;
 	this->ballPos = { BALL_X, BALL_Y };
 	this->paddlePos = { PADDLE_X, PADDLE_Y };
@@ -34,8 +35,8 @@ bool Game::initialize() {
 };
 
 void Game::shutdown() {
-	SDL_DestroyWindow(this->window);
 	SDL_DestroyRenderer(this->renderer);
+	SDL_DestroyWindow(this->window);
 	SDL_Quit();
 };
 
@@ -77,19 +78,6 @@ void Game::processInput() {
 	}
 };
 
-bool Game::paddleAtBorders()
-{
-	if (this->paddlePos.y < (PADDLE_HEIGHT / 2) - THICKNESS && this->paddleDirection == -1)
-	{
-		return true;
-	}
-	if (this->paddlePos.y > (HEIGHT - PADDLE_HEIGHT) && this->paddleDirection == 1)
-	{
-		return true;
-	}
-	return false;
-};
-
 void Game::movePaddle(float deltaTime)
 {
 	this->paddlePos.y += this->paddleDirection * PADDLE_SPEED * deltaTime;
@@ -103,10 +91,12 @@ bool Game::collisionWalls()
 
 bool Game::collisionPaddle()
 {
-	Uint16 diff = std::abs(this->ballPos.y - this->paddlePos.y);
+	float diff = this->paddlePos.y - this->ballPos.y;
+
+	diff = (diff > 0.0f) ? diff : -diff;
 
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
-		this->ballPos.x <= THICKNESS * 2 && this->ballPos.x >= THICKNESS &&
+		this->ballPos.x <= 25.0f && this->ballPos.x >= 20.0f &&
 		this->ballVel.x < 0.0f) || this->ballPos.x > WIDTH);
 }
 
@@ -137,22 +127,55 @@ void Game::updateGame() {
 	this->ticksCount = SDL_GetTicks();
 	if (this->paddleDirection != STOPPED)
 	{
-		if (!paddleAtBorders())
-			movePaddle(deltaTime);
+		movePaddle(deltaTime);
+		if (this->paddlePos.y < (PADDLE_HEIGHT / 2.0f + THICKNESS))
+		{
+			this->paddlePos.y = PADDLE_HEIGHT / 2.0f + THICKNESS;
+		}
+		else if (this->paddlePos.y > (HEIGHT - PADDLE_HEIGHT / 2.0f - THICKNESS))
+		{
+			this->paddlePos.y = HEIGHT - PADDLE_HEIGHT / 2.0f - THICKNESS;
+		}
 	}
 	moveBall(deltaTime);
 };
 
-bool Game::createObject(struct Vector2 object, int width, int height)
+void Game::drawPaddle()
 {
-	SDL_Rect new_object {
-					static_cast<int>(object.x - THICKNESS / 2),
-					static_cast<int>(object.y - THICKNESS / 2),
-					width,
-					height
-				};
-	return SDL_RenderFillRect(this->renderer, &new_object);
-};
+	SDL_Rect paddle{
+		static_cast<int>(this->paddlePos.x),
+		static_cast<int>(this->paddlePos.y - PADDLE_HEIGHT / 2),
+		THICKNESS,
+		static_cast<int>(PADDLE_HEIGHT)
+	};
+	SDL_RenderFillRect(this->renderer, &paddle);
+}
+
+void Game::drawBall()
+{
+	SDL_Rect ball{	
+		static_cast<int>(this->ballPos.x - THICKNESS / 2),
+		static_cast<int>(this->ballPos.y - THICKNESS / 2),
+		THICKNESS,
+		THICKNESS
+	};
+	SDL_RenderFillRect(this->renderer, &ball);
+}
+
+void Game::drawWalls()
+{
+	SDL_Rect wall{ 0, 0, static_cast<int>(WIDTH), THICKNESS };
+	SDL_RenderFillRect(this->renderer, &wall);
+	
+	wall.y = 768 - THICKNESS;
+	SDL_RenderFillRect(this->renderer, &wall);
+
+	wall.x = 1024 - THICKNESS;
+	wall.y = 0;
+	wall.w = THICKNESS;
+	wall.h = 1024;
+	SDL_RenderFillRect(this->renderer, &wall);
+}
 
 void Game::generateOutput() {
 	
@@ -170,16 +193,11 @@ void Game::generateOutput() {
 		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
 	}
 
+	drawWalls();
 
-
-	if (createObject(this->paddlePos, THICKNESS, PADDLE_HEIGHT) != 0)
-	{
-		SDL_Log("Failed to create left paddle: %s", SDL_GetError());
-	}
-	if (createObject(this->ballPos, THICKNESS, THICKNESS) != 0)
-	{
-		SDL_Log("Failed to create ball: %s", SDL_GetError());
-	}
+	drawPaddle();
+	
+	drawBall();
 
 	SDL_RenderPresent(this->renderer);
 };
