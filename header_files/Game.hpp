@@ -17,6 +17,8 @@ class Game
 		bool			running;
 		struct Vector2	paddlePos;
 		struct Vector2	ballPos;
+		Uint32			ticksCount;
+		int8_t			paddleDirection;
 
 	public:
 		/**
@@ -48,6 +50,9 @@ class Game
 		void processInput();
 		void updateGame();
 		void generateOutput();
+		bool createObject(struct Vector2 object, int width, int height);
+		bool paddleAtBorders();
+		void movePaddle(float deltaTime);
 };
 
 

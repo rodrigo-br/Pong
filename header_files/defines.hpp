@@ -56,6 +56,18 @@
 
 # define PADDLE_HEIGHT 100.0f
 
+# define BALL_X (WIDTH / 2)
+
+# define BALL_Y (HEIGHT / 2)
+
+# define PADDLE_Y (HEIGHT / 2 - PADDLE_HEIGHT / 2)
+
+# define PADDLE_X THICKNESS
+
+# define STOPPED 0
+
+# define PADDLE_SPEED 300.0f
+
 struct Vector2 {
 	float x;
 	float y;

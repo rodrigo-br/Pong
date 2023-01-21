@@ -3,8 +3,9 @@
 Game::Game() {
 	this->window = nullptr;
 	this->running = true;
-	this->ballPos = { WIDTH / 2, HEIGHT / 2 };
-	this->paddlePos = { THICKNESS, HEIGHT / 2 - PADDLE_HEIGHT / 2 };
+	this->ballPos = { BALL_X, BALL_Y };
+	this->paddlePos = { PADDLE_X, PADDLE_Y };
+	this->ticksCount = 0;
 };
 
 bool Game::initialize() {
@@ -47,8 +48,10 @@ void Game::runLoop() {
 };
 
 void Game::processInput() {
-	SDL_Event event;
-	const Uint8* state = SDL_GetKeyboardState(NULL);
+	SDL_Event		event;
+	const Uint8*	state = SDL_GetKeyboardState(NULL);
+
+	this->paddleDirection = STOPPED;
 
 	while (SDL_PollEvent(&event))
 	{
@@ -59,15 +62,66 @@ void Game::processInput() {
 				break;
 		}
 	}
+	if (state[SDL_SCANCODE_W])
+	{
+		this->paddleDirection -= 1;
+	}
+	if (state[SDL_SCANCODE_S])
+	{
+		this->paddleDirection += 1;
+	}
 	if (state[SDL_SCANCODE_ESCAPE])
 	{
 		this->running = false;
 	}
 };
 
+bool Game::paddleAtBorders()
+{
+	if (this->paddlePos.y < THICKNESS && this->paddleDirection == -1)
+	{
+		return true;
+	}
+	if (this->paddlePos.y > HEIGHT - PADDLE_HEIGHT && this->paddleDirection == 1)
+	{
+		return true;
+	}
+	return false;
+}
+
+void Game::movePaddle(float deltaTime)
+{
+	this->paddlePos.y += this->paddleDirection * PADDLE_SPEED * deltaTime;
+}
+
 void Game::updateGame() {
-	
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), this->ticksCount + 16))
+		;
+
+	float deltaTime = (SDL_GetTicks() - this->ticksCount) / 1000.0f;
+
+	if (deltaTime > 0.05f)
+	{
+		deltaTime = 0.05f;
+	}
+	this->ticksCount = SDL_GetTicks();
+	if (this->paddleDirection != STOPPED)
+	{
+		if (!paddleAtBorders())
+			movePaddle(deltaTime);
+	}
 };
+
+bool Game::createObject(struct Vector2 object, int width, int height)
+{
+	SDL_Rect new_object {
+					static_cast<int>(object.x - THICKNESS / 2),
+					static_cast<int>(object.y - THICKNESS / 2),
+					width,
+					height
+				};
+	return SDL_RenderFillRect(this->renderer, &new_object);
+}
 
 void Game::generateOutput() {
 	
@@ -79,21 +133,20 @@ void Game::generateOutput() {
 	{
 		SDL_Log("Failed to clear renderer: %s", SDL_GetError());
 	}
-	// draw game scene
-	// ...
-	SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
-	SDL_Rect left_paddle {static_cast<int>(this->paddlePos.x),
-							static_cast<int>(this->paddlePos.y - THICKNESS / 2),
-							THICKNESS,
-							static_cast<int>(PADDLE_HEIGHT)
-						};
-	SDL_RenderFillRect(this->renderer, &left_paddle);
-	SDL_Rect ball {static_cast<int>(this->ballPos.x - THICKNESS / 2),
-					static_cast<int>(this->ballPos.y - THICKNESS / 2),
-					THICKNESS, THICKNESS
-				};
-	SDL_RenderFillRect(this->renderer, &ball);
 
-	// end drawing
+	if (SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255))
+	{
+		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
+	}
+
+	if (createObject(this->paddlePos, THICKNESS, PADDLE_HEIGHT) != 0)
+	{
+		SDL_Log("Failed to create left paddle: %s", SDL_GetError());
+	}
+	if (createObject(this->ballPos, THICKNESS, THICKNESS) != 0)
+	{
+		SDL_Log("Failed to create ball: %s", SDL_GetError());
+	}
+
 	SDL_RenderPresent(this->renderer);
 };
