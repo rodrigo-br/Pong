@@ -6,6 +6,7 @@ Game::Game() {
 	this->ballPos = { BALL_X, BALL_Y };
 	this->paddlePos = { PADDLE_X, PADDLE_Y };
 	this->ticksCount = 0;
+	this->ballVel = { -200.0f, 235.0f };
 };
 
 bool Game::initialize() {
@@ -78,21 +79,50 @@ void Game::processInput() {
 
 bool Game::paddleAtBorders()
 {
-	if (this->paddlePos.y < THICKNESS && this->paddleDirection == -1)
+	if (this->paddlePos.y < (PADDLE_HEIGHT / 2) - THICKNESS && this->paddleDirection == -1)
 	{
 		return true;
 	}
-	if (this->paddlePos.y > HEIGHT - PADDLE_HEIGHT && this->paddleDirection == 1)
+	if (this->paddlePos.y > (HEIGHT - PADDLE_HEIGHT) && this->paddleDirection == 1)
 	{
 		return true;
 	}
 	return false;
-}
+};
 
 void Game::movePaddle(float deltaTime)
 {
 	this->paddlePos.y += this->paddleDirection * PADDLE_SPEED * deltaTime;
+};
+
+bool Game::collisionWalls()
+{
+	return ((this->ballPos.y <= THICKNESS && this->ballVel.y < 0.0f) ||
+		(this->ballPos.y >= HEIGHT - THICKNESS && this->ballVel.y > 0.0f));
+};
+
+bool Game::collisionPaddle()
+{
+	Uint16 diff = std::abs(this->ballPos.y - this->paddlePos.y);
+
+	return ((diff <= PADDLE_HEIGHT / 2.0f &&
+		this->ballPos.x <= THICKNESS * 2 && this->ballPos.x >= THICKNESS &&
+		this->ballVel.x < 0.0f) || this->ballPos.x > WIDTH);
 }
+
+void Game::moveBall(float deltaTime)
+{
+	this->ballPos.x += this->ballVel.x * deltaTime;
+	this->ballPos.y += this->ballVel.y * deltaTime;
+	if (collisionWalls())
+	{
+		this->ballVel.y *= -1;
+	}
+	if (collisionPaddle())
+	{
+		this->ballVel.x *= -1;
+	}
+};
 
 void Game::updateGame() {
 	while (!SDL_TICKS_PASSED(SDL_GetTicks(), this->ticksCount + 16))
@@ -110,6 +140,7 @@ void Game::updateGame() {
 		if (!paddleAtBorders())
 			movePaddle(deltaTime);
 	}
+	moveBall(deltaTime);
 };
 
 bool Game::createObject(struct Vector2 object, int width, int height)
@@ -121,7 +152,7 @@ bool Game::createObject(struct Vector2 object, int width, int height)
 					height
 				};
 	return SDL_RenderFillRect(this->renderer, &new_object);
-}
+};
 
 void Game::generateOutput() {
 	
@@ -138,6 +169,8 @@ void Game::generateOutput() {
 	{
 		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
 	}
+
+
 
 	if (createObject(this->paddlePos, THICKNESS, PADDLE_HEIGHT) != 0)
 	{

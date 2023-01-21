@@ -1,4 +1,4 @@
-NAME	= PacMan
+NAME	= Pong
 
 DIRS	= obj, header_files, source_files
 

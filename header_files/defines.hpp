@@ -5,7 +5,7 @@
 /**
  * @brief Title of the window
  */
-# define TITLE "Pac-Man"
+# define TITLE "Pong"
 
 /**
  * @brief Top left x-coordinate of window
@@ -56,14 +56,30 @@
 
 # define PADDLE_HEIGHT 100.0f
 
+/**
+ * @brief Initial X position of the ball. Set to the center of the screen
+ */
 # define BALL_X (WIDTH / 2)
 
+/**
+ * @brief Initial Y position of the ball. Set to the center of the screen
+ */
 # define BALL_Y (HEIGHT / 2)
 
-# define PADDLE_Y (HEIGHT / 2 - PADDLE_HEIGHT / 2)
+/**
+ * @brief Initial X position of the paddle. Set to the left side of the screen
+ */
+# define PADDLE_X 10.0f
 
-# define PADDLE_X THICKNESS
+/**
+ * @brief Initial Y position of the paddle. Set to the center of the left 
+ * side of the screen
+ */
+# define PADDLE_Y (HEIGHT / 2)
 
+/**
+ * @brief When paddleDirection is set to 0, the paddle is not moving
+ */
 # define STOPPED 0
 
 # define PADDLE_SPEED 300.0f

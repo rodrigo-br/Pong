@@ -17,6 +17,7 @@ class Game
 		bool			running;
 		struct Vector2	paddlePos;
 		struct Vector2	ballPos;
+		struct Vector2	ballVel;
 		Uint32			ticksCount;
 		int8_t			paddleDirection;
 
@@ -53,6 +54,9 @@ class Game
 		bool createObject(struct Vector2 object, int width, int height);
 		bool paddleAtBorders();
 		void movePaddle(float deltaTime);
+		void moveBall(float deltaTime);
+		bool collisionWalls();
+		bool collisionPaddle();
 };
 
 
