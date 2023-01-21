@@ -1,2 +1,2 @@
-# Pac-Man
-Game development studies recreating Pac-Man
+# Pong
+Game development studies recreating Pong
