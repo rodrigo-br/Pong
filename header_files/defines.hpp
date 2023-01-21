@@ -54,6 +54,8 @@
  */
 # define THICKNESS 15
 
+# define PADDLE_HEIGHT 100.0f
+
 struct Vector2 {
 	float x;
 	float y;
