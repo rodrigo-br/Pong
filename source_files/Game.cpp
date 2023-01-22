@@ -6,6 +6,7 @@ Game::Game() {
 	this->running = true;
 	this->ballPos = { BALL_X, BALL_Y };
 	this->paddlePos = { PADDLE_X, PADDLE_Y };
+	this->paddleEnemy = { ENEMY_X, ENEMY_Y };
 	this->ticksCount = 0;
 	this->ballVel = { -200.0f, 235.0f };
 };
@@ -97,7 +98,18 @@ bool Game::collisionPaddle()
 
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
 		this->ballPos.x <= 25.0f && this->ballPos.x >= 20.0f &&
-		this->ballVel.x < 0.0f) || this->ballPos.x > WIDTH);
+		this->ballVel.x < 0.0f));
+}
+
+bool Game::collisionEnemy()
+{
+	float diff = this->paddleEnemy.y - this->ballPos.y;
+
+	diff = (diff > 0.0f) ? diff : -diff;
+
+	return ((diff <= PADDLE_HEIGHT / 2.0f &&
+		this->ballPos.x >= WIDTH - 25.0f && this->ballPos.x <= WIDTH - 20.0f &&
+		this->ballVel.x > 0.0f));
 }
 
 void Game::moveBall(float deltaTime)
@@ -108,11 +120,23 @@ void Game::moveBall(float deltaTime)
 	{
 		this->ballVel.y *= -1;
 	}
-	if (collisionPaddle())
+	if (collisionPaddle() || collisionEnemy())
 	{
 		this->ballVel.x *= -1;
 	}
 };
+
+void Game::moveEnemy(float deltaTime)
+{
+	if (this->paddleEnemy.y < this->ballPos.y)
+	{
+		this->paddleEnemy.y += PADDLE_SPEED * deltaTime;
+	}
+	else if (this->paddleEnemy.y > this->ballPos.y)
+	{
+		this->paddleEnemy.y -= PADDLE_SPEED * deltaTime;
+	}
+}
 
 void Game::updateGame() {
 	while (!SDL_TICKS_PASSED(SDL_GetTicks(), this->ticksCount + 16))
@@ -138,13 +162,14 @@ void Game::updateGame() {
 		}
 	}
 	moveBall(deltaTime);
+	moveEnemy(deltaTime);
 };
 
-void Game::drawPaddle()
+void Game::drawPaddle(struct Vector2 &position)
 {
 	SDL_Rect paddle{
-		static_cast<int>(this->paddlePos.x),
-		static_cast<int>(this->paddlePos.y - PADDLE_HEIGHT / 2),
+		static_cast<int>(position.x),
+		static_cast<int>(position.y - PADDLE_HEIGHT / 2),
 		THICKNESS,
 		static_cast<int>(PADDLE_HEIGHT)
 	};
@@ -169,17 +194,11 @@ void Game::drawWalls()
 	
 	wall.y = 768 - THICKNESS;
 	SDL_RenderFillRect(this->renderer, &wall);
-
-	wall.x = 1024 - THICKNESS;
-	wall.y = 0;
-	wall.w = THICKNESS;
-	wall.h = 1024;
-	SDL_RenderFillRect(this->renderer, &wall);
 }
 
 void Game::generateOutput() {
 	
-	if (SDL_SetRenderDrawColor(this->renderer, 0, 0, 255, 255) != 0)
+	if (SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255) != 0)
 	{
 		SDL_Log("Failed to set renderer color: %s", SDL_GetError());
 	}
@@ -188,14 +207,15 @@ void Game::generateOutput() {
 		SDL_Log("Failed to clear renderer: %s", SDL_GetError());
 	}
 
-	if (SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255))
+	if (SDL_SetRenderDrawColor(this->renderer, 200, 75, 200, 255))
 	{
 		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
 	}
 
 	drawWalls();
 
-	drawPaddle();
+	drawPaddle(this->paddlePos);
+	drawPaddle(this->paddleEnemy);
 	
 	drawBall();
 

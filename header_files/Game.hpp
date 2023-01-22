@@ -16,6 +16,7 @@ class Game
 		SDL_Renderer	*renderer;
 		bool			running;
 		struct Vector2	paddlePos;
+		struct Vector2	paddleEnemy;
 		struct Vector2	ballPos;
 		struct Vector2	ballVel;
 		Uint32			ticksCount;
@@ -57,9 +58,12 @@ class Game
 		void moveBall(float deltaTime);
 		bool collisionWalls();
 		bool collisionPaddle();
-		void drawPaddle();
+		bool collisionEnemy();
+		void drawPaddle(struct Vector2 &position);
+		void drawEnemy();
 		void drawBall();
 		void drawWalls();
+		void moveEnemy(float deltaTime);
 };
 
 

@@ -78,6 +78,18 @@
 # define PADDLE_Y (HEIGHT / 2.0f)
 
 /**
+ * @brief Initial X position of the enemy paddle. Set to the right side of the
+ * screen
+ */
+# define ENEMY_X (WIDTH - PADDLE_X - THICKNESS)
+
+/**
+ * @brief Initial Y position of the enemy paddle. Set to the center of the right
+ * side of the screen
+ */
+# define ENEMY_Y (HEIGHT / 2.0f)
+
+/**
  * @brief When paddleDirection is set to 0, the paddle is not moving
  */
 # define STOPPED 0
