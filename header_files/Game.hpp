@@ -2,6 +2,8 @@
 # define GAME_HPP
 
 # include <SDL2/SDL.h>
+# include <vector>
+# include <utility>
 # include "../header_files/defines.hpp"
 
 /**
@@ -15,12 +17,11 @@ class Game
 		SDL_Window		*window;
 		SDL_Renderer	*renderer;
 		bool			running;
-		struct Vector2	paddlePos;
-		struct Vector2	paddleEnemy;
-		struct Vector2	ballPos;
-		struct Vector2	ballVel;
+		Vec2			paddlePos;
+		Vec2			paddleEnemy;
 		Uint32			ticksCount;
 		int8_t			paddleDirection;
+		std::vector<std::pair<Vec2, Vec2>> Balls;
 
 	public:
 		/**
@@ -52,11 +53,11 @@ class Game
 		void		processInput();
 		void		updateGame();
 		void		generateOutput();
-		bool		collisionWalls();
-		bool		collisionPaddle();
-		bool		collisionEnemy();
-		void		moveBall(float deltaTime);
-		void		moveEnemy(float deltaTime);
+		bool		collisionWalls(std::pair<Vec2, Vec2>& ball);
+		bool		collisionPaddle(std::pair<Vec2, Vec2>& ball);
+		bool		collisionEnemy(std::pair<Vec2, Vec2>& ball);
+		void		moveBall(float deltaTime, std::pair<Vec2, Vec2>& ball);
+		void		moveEnemy(float deltaTime, std::pair<Vec2, Vec2>& ball);
 		inline void	movePaddle(float deltaTime);
 		inline void	drawObjects();
 };

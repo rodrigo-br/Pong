@@ -1,15 +1,11 @@
 #include "../header_files/Game.hpp"
 
-Game::Game()
+Game::Game() : window(nullptr), renderer(nullptr), running(true), ticksCount(0)
 {
-	this->window = nullptr;
-	this->renderer = nullptr;
-	this->running = true;
-	this->ballPos = { BALL_X, BALL_Y };
+	this->Balls.push_back(std::make_pair(Vec2{BALL_X, BALL_Y}, Vec2{-200.0f, 235.0f}));
+	this->Balls.push_back(std::make_pair(Vec2{BALL_X, BALL_Y}, Vec2{200.0f, -240.0f}));
 	this->paddlePos = { PADDLE_X, PADDLE_Y };
 	this->paddleEnemy = { ENEMY_X, ENEMY_Y };
-	this->ticksCount = 0;
-	this->ballVel = { -200.0f, 235.0f };
 };
 
 bool Game::initialize()
@@ -89,32 +85,32 @@ inline void Game::movePaddle(float deltaTime)
 	this->paddlePos.y += this->paddleDirection * PADDLE_SPEED * deltaTime;
 };
 
-bool Game::collisionWalls()
+bool Game::collisionWalls(std::pair<Vec2, Vec2>& ball)
 {
-	return ((this->ballPos.y <= THICKNESS && this->ballVel.y < 0.0f) ||
-		(this->ballPos.y >= HEIGHT - THICKNESS && this->ballVel.y > 0.0f));
+	return ((ball.first.y <= THICKNESS && ball.second.y < 0.0f) ||
+		(ball.first.y >= HEIGHT - THICKNESS && ball.second.y > 0.0f));
 };
 
-bool Game::collisionPaddle()
+bool Game::collisionPaddle(std::pair<Vec2, Vec2>& ball)
 {
-	float diff = this->paddlePos.y - this->ballPos.y;
+	float diff = this->paddlePos.y - ball.first.y;
 
 	diff = (diff > 0.0f) ? diff : -diff;
 
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
-		this->ballPos.x <= 25.0f && this->ballPos.x >= 20.0f &&
-		this->ballVel.x < 0.0f));
+		ball.first.x <= 25.0f && ball.first.x >= 20.0f &&
+		ball.second.x < 0.0f));
 };
 
-bool Game::collisionEnemy()
+bool Game::collisionEnemy(std::pair<Vec2, Vec2>& ball)
 {
-	float diff = this->paddleEnemy.y - this->ballPos.y;
+	float diff = this->paddleEnemy.y - ball.first.y;
 
 	diff = (diff > 0.0f) ? diff : -diff;
 
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
-		this->ballPos.x >= WIDTH - 25.0f && this->ballPos.x <= WIDTH - 20.0f &&
-		this->ballVel.x > 0.0f));
+		ball.first.x >= WIDTH - 25.0f && ball.first.x <= WIDTH - 20.0f &&
+		ball.second.x > 0.0f));
 };
 
 inline static bool testGameOver(float ballX)
@@ -122,31 +118,31 @@ inline static bool testGameOver(float ballX)
 	return (ballX >= -100.0f);
 };
 
-void Game::moveBall(float deltaTime)
+void Game::moveBall(float deltaTime, std::pair<Vec2, Vec2>& ball)
 {
-	this->ballPos.x += this->ballVel.x * deltaTime;
-	this->ballPos.y += this->ballVel.y * deltaTime;
-	if (collisionWalls())
+	ball.first.x += ball.second.x * deltaTime;
+	ball.first.y += ball.second.y * deltaTime;
+	if (collisionWalls(ball))
 	{
-		this->ballVel.y *= -1;
+		ball.second.y *= -1;
 	}
-	if (collisionPaddle() || collisionEnemy())
+	if (collisionPaddle(ball) || collisionEnemy(ball))
 	{
-		this->ballVel.x *= -1;
+		ball.second.x *= -1;
 	}
 	if (this->running)
-		this->running = testGameOver(this->ballPos.x);
+		this->running = testGameOver(ball.first.x);
 };
 
-void Game::moveEnemy(float deltaTime)
+void Game::moveEnemy(float deltaTime, std::pair<Vec2, Vec2>& ball)
 {
-	if (this->ballPos.x < WIDTH * 0.6f)
+	if (ball.first.x < WIDTH * 0.6f)
 		return;
-	if (this->paddleEnemy.y < this->ballPos.y)
+	if (this->paddleEnemy.y < ball.first.y)
 	{
 		this->paddleEnemy.y += PADDLE_SPEED * deltaTime;
 	}
-	else if (this->paddleEnemy.y > this->ballPos.y)
+	else if (this->paddleEnemy.y > ball.first.y)
 	{
 		this->paddleEnemy.y -= PADDLE_SPEED * deltaTime;
 	}
@@ -176,8 +172,11 @@ void Game::updateGame()
 			this->paddlePos.y = HEIGHT - PADDLE_HEIGHT / 2.0f - THICKNESS;
 		}
 	}
-	moveBall(deltaTime);
-	moveEnemy(deltaTime);
+	for (int i = 0; i < 3; i++)
+	{
+		moveBall(deltaTime, Balls[i]);
+		moveEnemy(deltaTime, Balls[i]);
+	}
 };
 
 inline static void drawPaddle(SDL_Renderer *renderer, struct Vector2 &position)
@@ -216,7 +215,8 @@ inline void Game::drawObjects()
 	drawWalls(this->renderer);
 	drawPaddle(this->renderer, this->paddlePos);
 	drawPaddle(this->renderer, this->paddleEnemy);
-	drawBall(this->renderer, this->ballPos);
+	for (int i = 0; i < 3; i++)
+		drawBall(this->renderer, Balls[i].first);
 };
 
 static void clearOutput(SDL_Renderer *renderer)

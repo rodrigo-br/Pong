@@ -96,10 +96,10 @@
 
 # define PADDLE_SPEED 300.0f
 
-struct Vector2 {
+typedef struct Vector2 {
 	float x;
 	float y;
-};
+} Vec2;
 
 
 #endif
