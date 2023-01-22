@@ -117,6 +117,11 @@ bool Game::collisionEnemy()
 		this->ballVel.x > 0.0f));
 };
 
+inline static bool testGameOver(float ballX)
+{
+	return (ballX >= -100.0f);
+};
+
 void Game::moveBall(float deltaTime)
 {
 	this->ballPos.x += this->ballVel.x * deltaTime;
@@ -129,10 +134,7 @@ void Game::moveBall(float deltaTime)
 	{
 		this->ballVel.x *= -1;
 	}
-	if (this->ballPos.x <= -100.0f)
-	{
-		this->running = false;
-	}
+	this->running = testGameOver(this->ballPos.x);
 };
 
 void Game::moveEnemy(float deltaTime)

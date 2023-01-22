@@ -49,16 +49,16 @@ class Game
 
 	private:
 
-		void processInput();
-		void updateGame();
-		void generateOutput();
-		inline void movePaddle(float deltaTime);
-		void moveBall(float deltaTime);
-		bool collisionWalls();
-		bool collisionPaddle();
-		bool collisionEnemy();
-		inline void drawObjects();
-		void moveEnemy(float deltaTime);
+		void		processInput();
+		void		updateGame();
+		void		generateOutput();
+		bool		collisionWalls();
+		bool		collisionPaddle();
+		bool		collisionEnemy();
+		void		moveBall(float deltaTime);
+		void		moveEnemy(float deltaTime);
+		inline void	movePaddle(float deltaTime);
+		inline void	drawObjects();
 };
 
 
