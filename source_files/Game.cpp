@@ -129,10 +129,16 @@ void Game::moveBall(float deltaTime)
 	{
 		this->ballVel.x *= -1;
 	}
+	if (this->ballPos.x <= -100.0f)
+	{
+		this->running = false;
+	}
 };
 
 void Game::moveEnemy(float deltaTime)
 {
+	if (this->ballPos.x < WIDTH * 0.6f)
+		return;
 	if (this->paddleEnemy.y < this->ballPos.y)
 	{
 		this->paddleEnemy.y += PADDLE_SPEED * deltaTime;
@@ -171,7 +177,7 @@ void Game::updateGame()
 	moveEnemy(deltaTime);
 };
 
-void Game::drawPaddle(struct Vector2 &position)
+static void drawPaddle(SDL_Renderer *renderer, struct Vector2 &position)
 {
 	SDL_Rect paddle{
 		static_cast<int>(position.x),
@@ -179,35 +185,35 @@ void Game::drawPaddle(struct Vector2 &position)
 		THICKNESS,
 		static_cast<int>(PADDLE_HEIGHT)
 	};
-	SDL_RenderFillRect(this->renderer, &paddle);
+	SDL_RenderFillRect(renderer, &paddle);
 }
 
-void Game::drawBall()
+static void drawBall(SDL_Renderer *renderer, struct Vector2 &position)
 {
 	SDL_Rect ball{	
-		static_cast<int>(this->ballPos.x - THICKNESS / 2),
-		static_cast<int>(this->ballPos.y - THICKNESS / 2),
+		static_cast<int>(position.x - THICKNESS / 2),
+		static_cast<int>(position.y - THICKNESS / 2),
 		THICKNESS,
 		THICKNESS
 	};
-	SDL_RenderFillRect(this->renderer, &ball);
+	SDL_RenderFillRect(renderer, &ball);
 }
 
-void Game::drawWalls()
+static void drawWalls(SDL_Renderer *renderer)
 {
 	SDL_Rect wall{ 0, 0, static_cast<int>(WIDTH), THICKNESS };
-	SDL_RenderFillRect(this->renderer, &wall);
+	SDL_RenderFillRect(renderer, &wall);
 	
 	wall.y = 768 - THICKNESS;
-	SDL_RenderFillRect(this->renderer, &wall);
+	SDL_RenderFillRect(renderer, &wall);
 }
 
 void Game::drawObjects()
 {
-	drawWalls();
-	drawPaddle(this->paddlePos);
-	drawPaddle(this->paddleEnemy);
-	drawBall();
+	drawWalls(this->renderer);
+	drawPaddle(this->renderer, this->paddlePos);
+	drawPaddle(this->renderer, this->paddleEnemy);
+	drawBall(this->renderer, this->ballPos);
 }
 
 void Game::generateOutput()

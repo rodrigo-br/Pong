@@ -59,11 +59,7 @@ class Game
 		bool collisionWalls();
 		bool collisionPaddle();
 		bool collisionEnemy();
-		void drawPaddle(struct Vector2 &position);
 		void drawObjects();
-		void drawEnemy();
-		void drawBall();
-		void drawWalls();
 		void moveEnemy(float deltaTime);
 };
 
