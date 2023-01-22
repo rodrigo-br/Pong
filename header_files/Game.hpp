@@ -52,14 +52,12 @@ class Game
 		void processInput();
 		void updateGame();
 		void generateOutput();
-		bool createObject(struct Vector2 object, int width, int height);
-		bool paddleAtBorders();
-		void movePaddle(float deltaTime);
+		inline void movePaddle(float deltaTime);
 		void moveBall(float deltaTime);
 		bool collisionWalls();
 		bool collisionPaddle();
 		bool collisionEnemy();
-		void drawObjects();
+		inline void drawObjects();
 		void moveEnemy(float deltaTime);
 };
 

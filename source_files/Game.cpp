@@ -84,7 +84,7 @@ void Game::processInput()
 	}
 };
 
-void Game::movePaddle(float deltaTime)
+inline void Game::movePaddle(float deltaTime)
 {
 	this->paddlePos.y += this->paddleDirection * PADDLE_SPEED * deltaTime;
 };
@@ -104,7 +104,7 @@ bool Game::collisionPaddle()
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
 		this->ballPos.x <= 25.0f && this->ballPos.x >= 20.0f &&
 		this->ballVel.x < 0.0f));
-}
+};
 
 bool Game::collisionEnemy()
 {
@@ -115,7 +115,7 @@ bool Game::collisionEnemy()
 	return ((diff <= PADDLE_HEIGHT / 2.0f &&
 		this->ballPos.x >= WIDTH - 25.0f && this->ballPos.x <= WIDTH - 20.0f &&
 		this->ballVel.x > 0.0f));
-}
+};
 
 void Game::moveBall(float deltaTime)
 {
@@ -147,7 +147,7 @@ void Game::moveEnemy(float deltaTime)
 	{
 		this->paddleEnemy.y -= PADDLE_SPEED * deltaTime;
 	}
-}
+};
 
 void Game::updateGame()
 {
@@ -177,7 +177,7 @@ void Game::updateGame()
 	moveEnemy(deltaTime);
 };
 
-static void drawPaddle(SDL_Renderer *renderer, struct Vector2 &position)
+inline static void drawPaddle(SDL_Renderer *renderer, struct Vector2 &position)
 {
 	SDL_Rect paddle{
 		static_cast<int>(position.x),
@@ -186,9 +186,9 @@ static void drawPaddle(SDL_Renderer *renderer, struct Vector2 &position)
 		static_cast<int>(PADDLE_HEIGHT)
 	};
 	SDL_RenderFillRect(renderer, &paddle);
-}
+};
 
-static void drawBall(SDL_Renderer *renderer, struct Vector2 &position)
+inline static void drawBall(SDL_Renderer *renderer, struct Vector2 &position)
 {
 	SDL_Rect ball{	
 		static_cast<int>(position.x - THICKNESS / 2),
@@ -197,36 +197,40 @@ static void drawBall(SDL_Renderer *renderer, struct Vector2 &position)
 		THICKNESS
 	};
 	SDL_RenderFillRect(renderer, &ball);
-}
+};
 
-static void drawWalls(SDL_Renderer *renderer)
+inline static void drawWalls(SDL_Renderer *renderer)
 {
 	SDL_Rect wall{ 0, 0, static_cast<int>(WIDTH), THICKNESS };
 	SDL_RenderFillRect(renderer, &wall);
 	
 	wall.y = 768 - THICKNESS;
 	SDL_RenderFillRect(renderer, &wall);
-}
+};
 
-void Game::drawObjects()
+inline void Game::drawObjects()
 {
 	drawWalls(this->renderer);
 	drawPaddle(this->renderer, this->paddlePos);
 	drawPaddle(this->renderer, this->paddleEnemy);
 	drawBall(this->renderer, this->ballPos);
-}
+};
 
-void Game::generateOutput()
+static void clearOutput(SDL_Renderer *renderer)
 {
-	if (SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255) != 0)
+	if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) != 0)
 	{
 		SDL_Log("Failed to set renderer color: %s", SDL_GetError());
 	}
-	if (SDL_RenderClear(this->renderer) != 0)
+	if (SDL_RenderClear(renderer) != 0)
 	{
 		SDL_Log("Failed to clear renderer: %s", SDL_GetError());
 	}
+};
 
+void Game::generateOutput()
+{
+	clearOutput(this->renderer);
 	if (SDL_SetRenderDrawColor(this->renderer, 200, 75, 200, 255))
 	{
 		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
