@@ -134,7 +134,8 @@ void Game::moveBall(float deltaTime)
 	{
 		this->ballVel.x *= -1;
 	}
-	this->running = testGameOver(this->ballPos.x);
+	if (this->running)
+		this->running = testGameOver(this->ballPos.x);
 };
 
 void Game::moveEnemy(float deltaTime)

@@ -9,7 +9,6 @@ int main(void)
 	{
 		game.runLoop();
 	}
-
 	game.shutdown();
 	return 0;
 }
