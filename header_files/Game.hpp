@@ -60,6 +60,7 @@ class Game
 		bool collisionPaddle();
 		bool collisionEnemy();
 		void drawPaddle(struct Vector2 &position);
+		void drawObjects();
 		void drawEnemy();
 		void drawBall();
 		void drawWalls();

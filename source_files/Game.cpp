@@ -1,6 +1,7 @@
 #include "../header_files/Game.hpp"
 
-Game::Game() {
+Game::Game()
+{
 	this->window = nullptr;
 	this->renderer = nullptr;
 	this->running = true;
@@ -11,7 +12,8 @@ Game::Game() {
 	this->ballVel = { -200.0f, 235.0f };
 };
 
-bool Game::initialize() {
+bool Game::initialize()
+{
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -35,13 +37,15 @@ bool Game::initialize() {
 	return true;
 };
 
-void Game::shutdown() {
+void Game::shutdown()
+{
 	SDL_DestroyRenderer(this->renderer);
 	SDL_DestroyWindow(this->window);
 	SDL_Quit();
 };
 
-void Game::runLoop() {
+void Game::runLoop()
+{
 	while (this->running)
 	{
 		this->processInput();
@@ -50,7 +54,8 @@ void Game::runLoop() {
 	}
 };
 
-void Game::processInput() {
+void Game::processInput()
+{
 	SDL_Event		event;
 	const Uint8*	state = SDL_GetKeyboardState(NULL);
 
@@ -138,7 +143,8 @@ void Game::moveEnemy(float deltaTime)
 	}
 }
 
-void Game::updateGame() {
+void Game::updateGame()
+{
 	while (!SDL_TICKS_PASSED(SDL_GetTicks(), this->ticksCount + 16))
 		;
 
@@ -196,8 +202,16 @@ void Game::drawWalls()
 	SDL_RenderFillRect(this->renderer, &wall);
 }
 
-void Game::generateOutput() {
-	
+void Game::drawObjects()
+{
+	drawWalls();
+	drawPaddle(this->paddlePos);
+	drawPaddle(this->paddleEnemy);
+	drawBall();
+}
+
+void Game::generateOutput()
+{
 	if (SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255) != 0)
 	{
 		SDL_Log("Failed to set renderer color: %s", SDL_GetError());
@@ -212,12 +226,7 @@ void Game::generateOutput() {
 		SDL_Log("Failed to set renderer obj color: %s", SDL_GetError());
 	}
 
-	drawWalls();
-
-	drawPaddle(this->paddlePos);
-	drawPaddle(this->paddleEnemy);
-	
-	drawBall();
+	drawObjects();
 
 	SDL_RenderPresent(this->renderer);
 };
